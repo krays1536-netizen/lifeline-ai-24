@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { QRCodeSVG } from "qrcode.react";
+import { MedicalReportGenerator } from "@/components/MedicalReportGenerator";
 import { 
   UserPlus, 
   QrCode, 
@@ -422,6 +423,18 @@ export const DoctorConnectSystem = ({
           </div>
         </Card>
       )}
+
+          {/* Enhanced Medical Report Generator */}
+      <MedicalReportGenerator 
+        patientData={mockPatientData}
+        onReportGenerated={(reportUrl, reportData) => {
+          toast({
+            title: "📋 Medical Report Ready",
+            description: "Comprehensive medical report generated for doctor access",
+            variant: "default"
+          });
+        }}
+      />
 
       {/* Patient Data Preview */}
       <Card className="p-6">

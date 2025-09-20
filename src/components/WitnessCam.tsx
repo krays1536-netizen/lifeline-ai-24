@@ -11,9 +11,27 @@ interface WitnessCamProps {
   isActive: boolean;
   onRecordingStart: () => void;
   onRecordingStop: (recordingData: Blob) => void;
+  emergencyMode?: boolean;
+  location?: {
+    latitude: number;
+    longitude: number;
+    address: string;
+  };
+  vitals?: {
+    heartRate: number;
+    spO2: number;
+    temperature: number;
+  };
 }
 
-export const WitnessCam = ({ isActive, onRecordingStart, onRecordingStop }: WitnessCamProps) => {
+export const WitnessCam = ({ 
+  isActive, 
+  onRecordingStart, 
+  onRecordingStop, 
+  emergencyMode = false,
+  location,
+  vitals 
+}: WitnessCamProps) => {
   const { toast } = useToast();
   
   // Recording states
@@ -22,6 +40,10 @@ export const WitnessCam = ({ isActive, onRecordingStart, onRecordingStop }: Witn
   const [preBufferProgress, setPreBufferProgress] = useState(0);
   const [showPlayback, setShowPlayback] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
+  const [aiAnalysisActive, setAiAnalysisActive] = useState(false);
+  const [audioRecording, setAudioRecording] = useState(false);
+  const [locationTracking, setLocationTracking] = useState(false);
+  const [emergencyOverlay, setEmergencyOverlay] = useState(false);
   
   // Media refs
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -204,6 +226,22 @@ export const WitnessCam = ({ isActive, onRecordingStart, onRecordingStop }: Witn
     setShowPlayback(false);
   }, []);
 
+  // Enhanced emergency mode activation
+  useEffect(() => {
+    if (emergencyMode && !isRecording) {
+      setEmergencyOverlay(true);
+      setAiAnalysisActive(true);
+      setAudioRecording(true);
+      setLocationTracking(true);
+      
+      toast({
+        title: "🚨 EMERGENCY WITNESS CAM ACTIVATED",
+        description: "AI analysis, audio recording, and location tracking enabled",
+        variant: "destructive"
+      });
+    }
+  }, [emergencyMode, isRecording, toast]);
+
   // Auto-start recording on external trigger
   useEffect(() => {
     if (isActive && !isRecording && isPreBuffering) {
@@ -258,11 +296,38 @@ export const WitnessCam = ({ isActive, onRecordingStart, onRecordingStop }: Witn
           className="w-full h-full object-cover"
         />
         
-        {/* Recording Overlay */}
+        {/* Enhanced Emergency Recording Overlay */}
         {isRecording && (
-          <div className="absolute top-4 left-4 flex items-center gap-2 bg-red-500/90 text-white px-3 py-1 rounded-full text-sm font-medium">
-            <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-            REC {Math.floor(recordingDuration / 60)}:{(recordingDuration % 60).toString().padStart(2, '0')}
+          <div className="absolute top-4 left-4 space-y-2">
+            <div className="flex items-center gap-2 bg-red-500/90 text-white px-3 py-1 rounded-full text-sm font-medium">
+              <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+              🚨 EMERGENCY REC {Math.floor(recordingDuration / 60)}:{(recordingDuration % 60).toString().padStart(2, '0')}
+            </div>
+            
+            {emergencyMode && (
+              <div className="space-y-1">
+                {aiAnalysisActive && (
+                  <div className="bg-blue-500/90 text-white px-2 py-1 rounded text-xs">
+                    🤖 AI Analysis Active
+                  </div>
+                )}
+                {audioRecording && (
+                  <div className="bg-green-500/90 text-white px-2 py-1 rounded text-xs">
+                    🎤 Audio Recording
+                  </div>
+                )}
+                {locationTracking && location && (
+                  <div className="bg-purple-500/90 text-white px-2 py-1 rounded text-xs">
+                    📍 GPS: {location.address}
+                  </div>
+                )}
+                {vitals && (
+                  <div className="bg-orange-500/90 text-white px-2 py-1 rounded text-xs">
+                    ❤️ HR: {vitals.heartRate} | SpO2: {vitals.spO2}%
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
         

@@ -40,6 +40,7 @@ import { AppResetSettings } from "@/components/AppResetSettings";
 import { DiagnosticsPanel } from "@/components/DiagnosticsPanel";
 import { EnhancedWatchHub } from "@/components/EnhancedWatchHub";
 import { DoctorConnectSystem } from "@/components/DoctorConnectSystem";
+import { MedicalReportGenerator } from "@/components/MedicalReportGenerator";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Shield, Heart, Brain, Mic, Activity, Thermometer, MapPin, Users, Camera, Watch, Zap, Phone, Settings, FileText, Navigation, QrCode, Battery, BarChart3, Stethoscope, UserPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -380,13 +381,22 @@ export const LifeLineGuardian = () => {
     setActiveAlerts(score > 3 ? Math.ceil(score / 2) : 0);
   }, [healthReadings, sensorData, updateRisk, addEnvironmentalRisk]);
 
-  // Emergency trigger handler
+  // Emergency trigger handler with automatic witness cam
   const handleEmergencyTrigger = useCallback((type: string) => {
     setEmergencyModal({
       isOpen: true,
       type
     });
     setGuardianStatus("emergency");
+    
+    // AUTOMATIC WITNESS CAM ACTIVATION ON ANY EMERGENCY
+    setWitnessCamActive(true);
+    
+    toast({
+      title: "🚨 EMERGENCY DETECTED",
+      description: "Guardian AI activated • Witness cam recording • GPS tracking enabled",
+      variant: "destructive"
+    });
 
     // Auto-escalate for sensor-detected emergencies
     if (type === "Fall Detection") {
@@ -396,7 +406,7 @@ export const LifeLineGuardian = () => {
     }
   }, []);
 
-  // Emergency confirmation with witness cam & SMS
+  // Enhanced Emergency confirmation with automatic witness cam activation
   const handleEmergencyConfirmed = useCallback(() => {
     if (!currentLocation) {
       toast({
@@ -454,8 +464,15 @@ export const LifeLineGuardian = () => {
       type: ""
     });
 
-    // Activate witness cam
+    // Activate enhanced witness cam with emergency mode
     setWitnessCamActive(true);
+    
+    // Enhanced witness cam activation
+    toast({
+      title: "🎥 EMERGENCY WITNESS CAM ACTIVATED",
+      description: "AI recording with audio, GPS tracking, and vital signs overlay",
+      variant: "destructive"
+    });
 
     // Simulate SMS to family
     setTimeout(() => {
@@ -704,14 +721,25 @@ export const LifeLineGuardian = () => {
             <div className="space-y-6">
             {/* Fall detection integrated into Guardian tab */}
               
-              <WitnessCam isActive={witnessCamActive} onRecordingStart={() => {
-              setCameraRecording(true);
-              toast({
-                title: "🎥 Witness Cam Started",
-                description: "Recording evidence for emergency services",
-                variant: "default"
-              });
-            }} onRecordingStop={handleRecordingComplete} />
+              <WitnessCam 
+                isActive={witnessCamActive} 
+                emergencyMode={guardianStatus === "emergency"}
+                location={currentLocation}
+                vitals={{
+                  heartRate: healthReadings.heartRate,
+                  spO2: healthReadings.spO2,
+                  temperature: healthReadings.temperature
+                }}
+                onRecordingStart={() => {
+                  setCameraRecording(true);
+                  toast({
+                    title: "🚨 EMERGENCY WITNESS CAM ACTIVATED",
+                    description: "AI-enhanced recording with pre-buffer, audio, GPS, and vitals overlay",
+                    variant: "destructive"
+                  });
+                }} 
+                onRecordingStop={handleRecordingComplete} 
+              />
               
               <Card className="gradient-border">
                 <CardContent className="p-6">
