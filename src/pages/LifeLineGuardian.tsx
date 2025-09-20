@@ -38,6 +38,8 @@ import { HospitalFinder } from "@/components/HospitalFinder";
 import { WorkingQRSystem } from "@/components/WorkingQRSystem";
 import { AppResetSettings } from "@/components/AppResetSettings";
 import { DiagnosticsPanel } from "@/components/DiagnosticsPanel";
+import { EnhancedWatchHub } from "@/components/EnhancedWatchHub";
+import { DoctorConnectSystem } from "@/components/DoctorConnectSystem";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Shield, Heart, Brain, Mic, Activity, Thermometer, MapPin, Users, Camera, Watch, Zap, Phone, Settings, FileText, Navigation, QrCode, Battery, BarChart3, Stethoscope, UserPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -634,14 +636,14 @@ export const LifeLineGuardian = () => {
 
         {/* Navigation Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className={cn("grid w-full bg-card/50", isMobile ? "grid-cols-3" : "grid-cols-9")}>
+            <TabsList className={cn("grid w-full bg-card/50", isMobile ? "grid-cols-3" : "grid-cols-10")}>
             <TabsTrigger value="dashboard" className="font-poppins">
               <Shield className={cn("w-4 h-4", isMobile ? "" : "mr-2")} />
               {!isMobile && "Guardian"}
             </TabsTrigger>
             
             <TabsTrigger value="health" className="font-poppins">
-              
+              <Heart className={cn("w-4 h-4", isMobile ? "" : "mr-2")} />
               {!isMobile && "Health"}
             </TabsTrigger>
             {!isMobile && <>
@@ -657,7 +659,10 @@ export const LifeLineGuardian = () => {
                   <Watch className="w-4 h-4 mr-2" />
                   Watch Hub
                 </TabsTrigger>
-                
+                <TabsTrigger value="doctor-connect" className="font-poppins">
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Doctor
+                </TabsTrigger>
                 <TabsTrigger value="location" className="font-poppins">
                   <MapPin className="w-4 h-4 mr-2" />
                   Location
@@ -803,9 +808,25 @@ export const LifeLineGuardian = () => {
           } : undefined} emergencyMode={guardianStatus === "emergency"} />
           </TabsContent>
 
-          {/* Watch Hub Tab - PRODUCTION */}
-          <TabsContent value="watch">
-            {/* 3D Watch replaced with 2D version */}
+          {/* Watch Hub Tab - ENHANCED VERSION */}
+          <TabsContent value="watch" className="space-y-6">
+            <EnhancedWatchHub 
+              vitals={{
+                heartRate: healthReadings.heartRate,
+                spO2: healthReadings.spO2,
+                temperature: healthReadings.temperature
+              }}
+              onEmergencyTrigger={() => handleEmergencyTrigger("Watch Emergency")}
+              onVitalsUpdate={(vitals) => {
+                setHealthReadings(prev => ({
+                  ...prev,
+                  heartRate: vitals.heartRate,
+                  spO2: vitals.spO2,
+                  temperature: vitals.temperature,
+                  timestamp: vitals.timestamp
+                }));
+              }}
+            />
           </TabsContent>
 
           {/* Community Tab */}
@@ -842,8 +863,8 @@ export const LifeLineGuardian = () => {
               </div>
             </Card>
 
-            {/* Enhanced QR Features */}
-            <div className="grid grid-cols-2 gap-4">
+            {/* Enhanced QR Features & Doctor Connect */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Button className="h-20 bg-[var(--gradient-primary)] text-white" onClick={() => setShowQRGenerator(true)}>
                 <QrCode className="w-8 h-8 mr-3" />
                 Enhanced QR Generator
@@ -852,6 +873,11 @@ export const LifeLineGuardian = () => {
               <Button variant="outline" className="h-20 border-cyber-orange/30" onClick={() => setShowBraceletDesigner(true)}>
                 <Watch className="w-8 h-8 mr-3" />
                 QR Medical Bracelet
+              </Button>
+
+              <Button variant="outline" className="h-20 border-green-500/30 text-green-500 hover:bg-green-500/10" onClick={() => setActiveTab('doctor-connect')}>
+                <UserPlus className="w-8 h-8 mr-3" />
+                Connect Doctor
               </Button>
             </div>
 
@@ -880,7 +906,7 @@ export const LifeLineGuardian = () => {
             </Card>
           </TabsContent>
 
-          {/* Life-Saving Features Tab - DEDICATED SAFETY TAB */}
+          {/* Life-Saving Features Tab - ENHANCED SAFETY TAB */}
           <TabsContent value="safety" className="space-y-6">
             <div className="text-center mb-6">
               <h2 className="text-3xl font-bold bg-[var(--gradient-primary)] bg-clip-text text-transparent mb-2">
@@ -891,7 +917,56 @@ export const LifeLineGuardian = () => {
               </p>
             </div>
             
-            {/* Life saving features renamed to Critical Response */}
+            <CriticalResponseFeatures 
+              onEmergencyTrigger={handleEmergencyTrigger}
+              userLocation={currentLocation}
+              riskScore={riskState.current}
+            />
+          </TabsContent>
+
+          {/* Doctor Connect Tab */}
+          <TabsContent value="doctor-connect" className="space-y-6">
+            <DoctorConnectSystem 
+              patientData={{
+                personalInfo: {
+                  name: enhancedProfile?.name || userProfile.name,
+                  age: parseInt(enhancedProfile?.age || userProfile.age),
+                  bloodType: enhancedProfile?.bloodType || userProfile.bloodType,
+                  allergies: enhancedProfile?.allergies || userProfile.allergies.split(',').filter(Boolean),
+                  conditions: enhancedProfile?.medicalConditions || userProfile.medicalConditions
+                },
+                emergencyContacts: enhancedProfile?.emergencyContacts || userProfile.emergencyContacts.map(c => ({
+                  name: c.name,
+                  relation: c.relationship,
+                  phone: c.phone
+                })),
+                currentVitals: {
+                  heartRate: healthReadings.heartRate,
+                  spO2: healthReadings.spO2,
+                  temperature: healthReadings.temperature,
+                  timestamp: healthReadings.timestamp
+                },
+                location: currentLocation ? {
+                  latitude: currentLocation.latitude,
+                  longitude: currentLocation.longitude,
+                  address: currentLocation.address
+                } : null
+              }}
+              onDoctorConnected={(doctor) => {
+                toast({
+                  title: "👨‍⚕️ Doctor Connected",
+                  description: `${doctor.name} now has secure access to your health data`,
+                  variant: "default"
+                });
+              }}
+              onDataShared={(data) => {
+                toast({
+                  title: "📊 Data Shared",
+                  description: "Medical data securely transmitted to doctor",
+                  variant: "default"
+                });
+              }}
+            />
           </TabsContent>
         </Tabs>
 

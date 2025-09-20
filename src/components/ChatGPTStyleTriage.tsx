@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
+import { VoiceCommandSystem } from '@/components/VoiceCommandSystem';
 import { cn } from '@/lib/utils';
 import { 
   Activity, 
@@ -16,7 +17,9 @@ import {
   Clock,
   User,
   Mic,
-  MicOff
+  MicOff,
+  Volume2,
+  Stethoscope
 } from 'lucide-react';
 
 interface ChatMessage {
@@ -41,7 +44,7 @@ export const ChatGPTStyleTriage = () => {
     {
       id: '1',
       type: 'system',
-      content: 'Hello! I\'m your AI Health Assistant with voice recognition. I can help assess your symptoms and provide medical guidance. Describe your symptoms by typing or speaking.',
+      content: 'Hello! I\'m your AI Health Assistant with advanced voice recognition. I can help assess your symptoms and provide medical guidance. Describe your symptoms by typing, speaking, or using voice commands like "check heart rate" or "emergency help".',
       timestamp: new Date(),
       suggestions: HEALTH_SUGGESTIONS.slice(0, 6)
     }
@@ -49,6 +52,7 @@ export const ChatGPTStyleTriage = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [showVoiceCommands, setShowVoiceCommands] = useState(false);
   const [currentSuggestions, setCurrentSuggestions] = useState(HEALTH_SUGGESTIONS.slice(0, 6));
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -221,21 +225,68 @@ export const ChatGPTStyleTriage = () => {
     }
   };
 
+  const handleVoiceCommand = useCallback((action: string, data?: any) => {
+    switch (action) {
+      case 'TRIGGER_SOS':
+        sendMessage("Emergency! I need immediate help!");
+        break;
+      case 'START_HEART_SCAN':
+        sendMessage("I need to check my heart rate");
+        break;
+      case 'START_STRESS_SCAN':
+        sendMessage("I want to analyze my stress levels");
+        break;
+      case 'SHOW_HEALTH_DASHBOARD':
+        sendMessage("Show me my current health status");
+        break;
+      case 'FIND_HOSPITAL':
+        sendMessage("I need to find the nearest hospital");
+        break;
+      case 'SHARE_LOCATION':
+        sendMessage("I need to share my location for emergency");
+        break;
+      default:
+        if (data?.text) {
+          sendMessage(data.text);
+        }
+        break;
+    }
+  }, []);
+
   return (
-    <Card className="h-[600px] flex flex-col bg-black text-white rounded-lg border border-white/10 overflow-hidden">
-      {/* Header */}
-      <CardHeader className="bg-gradient-to-r from-gray-900 to-gray-800 px-4 py-3 border-b border-gray-700">
-        <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Activity className="h-5 w-5 text-red-500 animate-pulse" />
-            <h3 className="font-semibold text-white">LifeLine AI Triage</h3>
-            <Badge variant="secondary" className="bg-red-600 text-white border-none">MEDICAL AI</Badge>
-          </div>
-          <Badge variant="outline" className="text-white border-white/30">
-            Text-Based Assistance
-          </Badge>
-        </CardTitle>
-      </CardHeader>
+    <div className="space-y-4">
+      {/* Voice Commands Panel */}
+      {showVoiceCommands && (
+        <div className="mb-4">
+          <VoiceCommandSystem onCommand={handleVoiceCommand} enabled={true} />
+        </div>
+      )}
+
+      <Card className="h-[600px] flex flex-col bg-black text-white rounded-lg border border-white/10 overflow-hidden">
+        {/* Header */}
+        <CardHeader className="bg-gradient-to-r from-gray-900 to-gray-800 px-4 py-3 border-b border-gray-700">
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Activity className="h-5 w-5 text-red-500 animate-pulse" />
+              <h3 className="font-semibold text-white">LifeLine AI Triage</h3>
+              <Badge variant="secondary" className="bg-red-600 text-white border-none">MEDICAL AI</Badge>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowVoiceCommands(!showVoiceCommands)}
+                className={`${showVoiceCommands ? 'bg-primary text-white' : 'text-white border-white/30'}`}
+              >
+                <Volume2 className="w-4 h-4 mr-1" />
+                Voice
+              </Button>
+              <Badge variant="outline" className="text-white border-white/30">
+                Voice-Enhanced AI
+              </Badge>
+            </div>
+          </CardTitle>
+        </CardHeader>
       
       <CardContent className="flex flex-col h-full p-0 bg-black">
         <ScrollArea className="flex-1 px-4">
@@ -359,5 +410,6 @@ export const ChatGPTStyleTriage = () => {
         </div>
       </CardContent>
     </Card>
+    </div>
   );
 };

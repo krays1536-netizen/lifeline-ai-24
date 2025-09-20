@@ -38,7 +38,23 @@ interface ResponseTeam {
   status: 'dispatched' | 'enroute' | 'arrived';
 }
 
-export const CriticalResponseFeatures = () => {
+interface CriticalResponseFeaturesProps {
+  onEmergencyTrigger?: (type: string) => void;
+  userLocation?: {
+    latitude: number;
+    longitude: number;
+    accuracy: number;
+    city: string;
+    address: string;
+  } | null;
+  riskScore?: number;
+}
+
+export const CriticalResponseFeatures = ({ 
+  onEmergencyTrigger,
+  userLocation,
+  riskScore = 0 
+}: CriticalResponseFeaturesProps) => {
   const { toast } = useToast();
   
   const [emergencyMode, setEmergencyMode] = useState(false);
@@ -125,6 +141,9 @@ export const CriticalResponseFeatures = () => {
     setEmergencyMode(true);
     setResponseTime(0);
     setActiveProtocols(['cpr', 'trauma']);
+    
+    // Trigger parent emergency handler
+    onEmergencyTrigger?.('Critical Response System');
     
     toast({
       title: "🚨 CRITICAL RESPONSE ACTIVATED",
