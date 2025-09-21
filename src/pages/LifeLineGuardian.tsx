@@ -388,10 +388,9 @@ export const LifeLineGuardian = () => {
       type
     });
     setGuardianStatus("emergency");
-    
+
     // AUTOMATIC WITNESS CAM ACTIVATION ON ANY EMERGENCY
     setWitnessCamActive(true);
-    
     toast({
       title: "🚨 EMERGENCY DETECTED",
       description: "Guardian AI activated • Witness cam recording • GPS tracking enabled",
@@ -466,7 +465,7 @@ export const LifeLineGuardian = () => {
 
     // Activate enhanced witness cam with emergency mode
     setWitnessCamActive(true);
-    
+
     // Enhanced witness cam activation
     toast({
       title: "🎥 EMERGENCY WITNESS CAM ACTIVATED",
@@ -660,7 +659,7 @@ export const LifeLineGuardian = () => {
             </TabsTrigger>
             
             <TabsTrigger value="health" className="font-poppins">
-              <Heart className={cn("w-4 h-4", isMobile ? "" : "mr-2")} />
+              
               {!isMobile && "Health"}
             </TabsTrigger>
             {!isMobile && <>
@@ -677,7 +676,7 @@ export const LifeLineGuardian = () => {
                   Watch Hub
                 </TabsTrigger>
                 <TabsTrigger value="doctor-connect" className="font-poppins">
-                  <UserPlus className="w-4 h-4 mr-2" />
+                  
                   Doctor
                 </TabsTrigger>
                 <TabsTrigger value="location" className="font-poppins">
@@ -721,25 +720,18 @@ export const LifeLineGuardian = () => {
             <div className="space-y-6">
             {/* Fall detection integrated into Guardian tab */}
               
-              <WitnessCam 
-                isActive={witnessCamActive} 
-                emergencyMode={guardianStatus === "emergency"}
-                location={currentLocation}
-                vitals={{
-                  heartRate: healthReadings.heartRate,
-                  spO2: healthReadings.spO2,
-                  temperature: healthReadings.temperature
-                }}
-                onRecordingStart={() => {
-                  setCameraRecording(true);
-                  toast({
-                    title: "🚨 EMERGENCY WITNESS CAM ACTIVATED",
-                    description: "AI-enhanced recording with pre-buffer, audio, GPS, and vitals overlay",
-                    variant: "destructive"
-                  });
-                }} 
-                onRecordingStop={handleRecordingComplete} 
-              />
+              <WitnessCam isActive={witnessCamActive} emergencyMode={guardianStatus === "emergency"} location={currentLocation} vitals={{
+              heartRate: healthReadings.heartRate,
+              spO2: healthReadings.spO2,
+              temperature: healthReadings.temperature
+            }} onRecordingStart={() => {
+              setCameraRecording(true);
+              toast({
+                title: "🚨 EMERGENCY WITNESS CAM ACTIVATED",
+                description: "AI-enhanced recording with pre-buffer, audio, GPS, and vitals overlay",
+                variant: "destructive"
+              });
+            }} onRecordingStop={handleRecordingComplete} />
               
               <Card className="gradient-border">
                 <CardContent className="p-6">
@@ -838,14 +830,11 @@ export const LifeLineGuardian = () => {
 
           {/* Watch Hub Tab - ENHANCED VERSION */}
           <TabsContent value="watch" className="space-y-6">
-            <SuperEnhancedWatchHub 
-              vitals={{
-                heartRate: healthReadings.heartRate,
-                spO2: healthReadings.spO2,
-                temperature: healthReadings.temperature
-              }}
-              onEmergencyTrigger={() => handleEmergencyTrigger("Watch Emergency")}
-            />
+            <SuperEnhancedWatchHub vitals={{
+            heartRate: healthReadings.heartRate,
+            spO2: healthReadings.spO2,
+            temperature: healthReadings.temperature
+          }} onEmergencyTrigger={() => handleEmergencyTrigger("Watch Emergency")} />
           </TabsContent>
 
           {/* Community Tab */}
@@ -936,56 +925,48 @@ export const LifeLineGuardian = () => {
               </p>
             </div>
             
-            <CriticalResponseFeatures 
-              onEmergencyTrigger={handleEmergencyTrigger}
-              userLocation={currentLocation}
-              riskScore={riskState.current}
-            />
+            <CriticalResponseFeatures onEmergencyTrigger={handleEmergencyTrigger} userLocation={currentLocation} riskScore={riskState.current} />
           </TabsContent>
 
           {/* Doctor Connect Tab */}
           <TabsContent value="doctor-connect" className="space-y-6">
-            <DoctorConnectSystem 
-              patientData={{
-                personalInfo: {
-                  name: enhancedProfile?.name || userProfile.name,
-                  age: parseInt(enhancedProfile?.age || userProfile.age),
-                  bloodType: enhancedProfile?.bloodType || userProfile.bloodType,
-                  allergies: enhancedProfile?.allergies || userProfile.allergies.split(',').filter(Boolean),
-                  conditions: enhancedProfile?.medicalConditions || userProfile.medicalConditions
-                },
-                emergencyContacts: enhancedProfile?.emergencyContacts || userProfile.emergencyContacts.map(c => ({
-                  name: c.name,
-                  relation: c.relationship,
-                  phone: c.phone
-                })),
-                currentVitals: {
-                  heartRate: healthReadings.heartRate,
-                  spO2: healthReadings.spO2,
-                  temperature: healthReadings.temperature,
-                  timestamp: healthReadings.timestamp
-                },
-                location: currentLocation ? {
-                  latitude: currentLocation.latitude,
-                  longitude: currentLocation.longitude,
-                  address: currentLocation.address
-                } : null
-              }}
-              onDoctorConnected={(doctor) => {
-                toast({
-                  title: "👨‍⚕️ Doctor Connected",
-                  description: `${doctor.name} now has secure access to your health data`,
-                  variant: "default"
-                });
-              }}
-              onDataShared={(data) => {
-                toast({
-                  title: "📊 Data Shared",
-                  description: "Medical data securely transmitted to doctor",
-                  variant: "default"
-                });
-              }}
-            />
+            <DoctorConnectSystem patientData={{
+            personalInfo: {
+              name: enhancedProfile?.name || userProfile.name,
+              age: parseInt(enhancedProfile?.age || userProfile.age),
+              bloodType: enhancedProfile?.bloodType || userProfile.bloodType,
+              allergies: enhancedProfile?.allergies || userProfile.allergies.split(',').filter(Boolean),
+              conditions: enhancedProfile?.medicalConditions || userProfile.medicalConditions
+            },
+            emergencyContacts: enhancedProfile?.emergencyContacts || userProfile.emergencyContacts.map(c => ({
+              name: c.name,
+              relation: c.relationship,
+              phone: c.phone
+            })),
+            currentVitals: {
+              heartRate: healthReadings.heartRate,
+              spO2: healthReadings.spO2,
+              temperature: healthReadings.temperature,
+              timestamp: healthReadings.timestamp
+            },
+            location: currentLocation ? {
+              latitude: currentLocation.latitude,
+              longitude: currentLocation.longitude,
+              address: currentLocation.address
+            } : null
+          }} onDoctorConnected={doctor => {
+            toast({
+              title: "👨‍⚕️ Doctor Connected",
+              description: `${doctor.name} now has secure access to your health data`,
+              variant: "default"
+            });
+          }} onDataShared={data => {
+            toast({
+              title: "📊 Data Shared",
+              description: "Medical data securely transmitted to doctor",
+              variant: "default"
+            });
+          }} />
           </TabsContent>
         </Tabs>
 
