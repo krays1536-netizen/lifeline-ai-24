@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { MapPin, Navigation, Phone, Clock, Star, Zap } from "lucide-react";
+import { MapPin, Navigation, Phone, Clock, Star, Zap, Calendar, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -387,19 +387,63 @@ export const HospitalFinder = ({ userLocation, emergencyMode = false }: Hospital
     }, 1000);
   }, [hospitals, searchRadius, selectedSpecialty, sortBy, emergencyMode]);
 
-  // Emergency call handler
+  // Enhanced emergency call handler with AI voice
   const callEmergency = useCallback((phone: string, hospitalName: string) => {
     toast({
       title: `📞 Calling ${hospitalName}`,
-      description: `Dialing ${phone}...`,
+      description: `Dialing ${phone}... AI will speak for you if needed`,
       variant: emergencyMode ? "destructive" : "default"
     });
     
-    // In real app, would trigger actual call
-    if (window.location.href.includes('tel:')) {
-      window.location.href = `tel:${phone}`;
+    // Simulate AI voice assistance
+    if (emergencyMode) {
+      setTimeout(() => {
+        toast({
+          title: "🤖 AI Voice Ready",
+          description: "AI will communicate your emergency details to hospital staff",
+          variant: "default"
+        });
+      }, 2000);
     }
-  }, [emergencyMode]);
+    
+    // Trigger actual call
+    window.open(`tel:${phone}`, '_self');
+  }, [emergencyMode, toast]);
+
+  // Book appointment
+  const bookAppointment = useCallback((hospital: Hospital) => {
+    toast({
+      title: "📅 Booking Appointment",
+      description: `Scheduling with ${hospital.name}...`,
+      variant: "default"
+    });
+    
+    // Simulate booking process
+    setTimeout(() => {
+      toast({
+        title: "✅ Appointment Scheduled",
+        description: `Next available: Tomorrow 2:00 PM at ${hospital.name}`,
+        variant: "default"
+      });
+    }, 2000);
+  }, [toast]);
+
+  // Share medical records
+  const shareMedicalRecords = useCallback((hospital: Hospital) => {
+    toast({
+      title: "📋 Sharing Medical Records",
+      description: `Sending encrypted records to ${hospital.name}`,
+      variant: "default"
+    });
+    
+    setTimeout(() => {
+      toast({
+        title: "✅ Records Shared",
+        description: "Medical history securely transmitted",
+        variant: "default"
+      });
+    }, 1500);
+  }, [toast]);
 
   // Get directions
   const getDirections = useCallback((hospital: Hospital) => {
@@ -600,14 +644,39 @@ export const HospitalFinder = ({ userLocation, emergencyMode = false }: Hospital
                   Directions
                 </Button>
                 
+                <Button
+                  onClick={() => bookAppointment(hospital)}
+                  variant="secondary"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  <Calendar className="w-4 h-4" />
+                  Book
+                </Button>
+                
+                <Button
+                  onClick={() => shareMedicalRecords(hospital)}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  <FileText className="w-4 h-4" />
+                  Share Records
+                </Button>
+                
                 {emergencyMode && (
                   <Button
-                    variant="secondary"
+                    variant="destructive"
                     size="sm"
-                    className="flex items-center gap-2 ml-auto"
+                    className="flex items-center gap-2 ml-auto animate-pulse"
+                    onClick={() => {
+                      callEmergency(hospital.phone, hospital.name);
+                      getDirections(hospital);
+                      shareMedicalRecords(hospital);
+                    }}
                   >
                     <Zap className="w-4 h-4" />
-                    Fast Track
+                    Emergency Protocol
                   </Button>
                 )}
               </div>

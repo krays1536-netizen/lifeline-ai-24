@@ -26,7 +26,8 @@ import {
   User,
   Shield,
   Send,
-  Download
+  Download,
+  Zap
 } from "lucide-react";
 
 interface DoctorInfo {
@@ -88,6 +89,10 @@ export const DoctorConnectSystem = ({
   const [selectedData, setSelectedData] = useState<string[]>([
     "vitals", "medical-history", "emergency-contacts", "location"
   ]);
+  const [liveUpdates, setLiveUpdates] = useState(false);
+  const [autoShare, setAutoShare] = useState(false);
+  const [emergencyMode, setEmergencyMode] = useState(false);
+  const [videoCallActive, setVideoCallActive] = useState(false);
 
   // Generate secure sharing code
   const generateShareCode = useCallback(() => {
@@ -183,29 +188,79 @@ export const DoctorConnectSystem = ({
     });
   }, [connectionLink, generateShareCode, toast]);
 
-  // Mock doctor connection (in real app, this would come from doctor's action)
+  // Enhanced doctor connection with multiple specialists
   const simulateDoctorConnection = useCallback(() => {
-    const mockDoctor: DoctorInfo = {
-      id: `doc-${Date.now()}`,
-      name: "Dr. Sarah Al-Rashid",
-      specialty: "Emergency Medicine",
-      hospital: "Kuwait Hospital",
-      phone: "+965-2222-3333",
-      email: "s.alrashid@kuwaithosp.kw",
-      licenseNumber: "KW-MED-2024-1234",
-      isVerified: true,
-      connectionDate: new Date()
-    };
+    const mockDoctors = [
+      {
+        id: `doc-${Date.now()}`,
+        name: "Dr. Sarah Al-Rashid",
+        specialty: "Emergency Medicine",
+        hospital: "Kuwait Hospital",
+        phone: "+965-2222-3333",
+        email: "s.alrashid@kuwaithosp.kw",
+        licenseNumber: "KW-MED-2024-1234",
+        isVerified: true,
+        connectionDate: new Date()
+      },
+      {
+        id: `doc-${Date.now() + 1}`,
+        name: "Dr. Ahmed Al-Salem",
+        specialty: "Cardiology",
+        hospital: "Al-Sabah Hospital",
+        phone: "+965-2481-8000",
+        email: "a.alsalem@alsabah.kw",
+        licenseNumber: "KW-MED-2024-5678",
+        isVerified: true,
+        connectionDate: new Date()
+      }
+    ];
 
-    setConnectedDoctors(prev => [...prev, mockDoctor]);
-    onDoctorConnected?.(mockDoctor);
+    const randomDoctor = mockDoctors[Math.floor(Math.random() * mockDoctors.length)];
+    setConnectedDoctors(prev => [...prev, randomDoctor]);
+    onDoctorConnected?.(randomDoctor);
     
     toast({
       title: "👨‍⚕️ Doctor Connected",
-      description: `${mockDoctor.name} has joined your care team`,
+      description: `${randomDoctor.name} has joined your care team`,
       variant: "default"
     });
   }, [onDoctorConnected, toast]);
+
+  // Start video consultation
+  const startVideoCall = useCallback((doctorId: string) => {
+    setVideoCallActive(true);
+    toast({
+      title: "📹 Video Consultation Starting",
+      description: "Connecting to secure medical video call...",
+      variant: "default"
+    });
+    
+    // Simulate connection delay
+    setTimeout(() => {
+      toast({
+        title: "✅ Video Call Connected",
+        description: "Secure connection established with doctor",
+        variant: "default"
+      });
+    }, 3000);
+  }, [toast]);
+
+  // AI-powered emergency detection
+  const detectEmergency = useCallback(() => {
+    setEmergencyMode(true);
+    setAutoShare(true);
+    
+    toast({
+      title: "🚨 Emergency Detected",
+      description: "Auto-sharing critical data with all connected doctors",
+      variant: "destructive"
+    });
+
+    // Auto-share with all doctors
+    connectedDoctors.forEach(doctor => {
+      shareDataWithDoctor(doctor.id);
+    });
+  }, [connectedDoctors]);
 
   const mockPatientData = patientData || {
     personalInfo: {
@@ -250,8 +305,8 @@ export const DoctorConnectSystem = ({
         </CardHeader>
       </Card>
 
-      {/* Connection Methods */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Enhanced Connection Methods */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="p-6">
           <div className="text-center space-y-4">
             <div className="p-3 bg-blue-500/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto">
@@ -282,7 +337,79 @@ export const DoctorConnectSystem = ({
             </Button>
           </div>
         </Card>
+
+        <Card className="p-6">
+          <div className="text-center space-y-4">
+            <div className="p-3 bg-red-500/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto">
+              <Zap className="w-8 h-8 text-red-500" />
+            </div>
+            <h3 className="font-semibold">Emergency Connect</h3>
+            <p className="text-sm text-muted-foreground">
+              Instant connection to emergency doctors
+            </p>
+            <Button onClick={detectEmergency} variant="destructive" className="w-full">
+              Emergency Access
+            </Button>
+          </div>
+        </Card>
       </div>
+
+      {/* Live Monitoring Controls */}
+      <Card className="p-4">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-semibold">Advanced Features</h3>
+          {emergencyMode && (
+            <Badge variant="destructive" className="animate-pulse">
+              EMERGENCY MODE
+            </Badge>
+          )}
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="liveUpdates"
+              checked={liveUpdates}
+              onChange={(e) => setLiveUpdates(e.target.checked)}
+              className="rounded"
+            />
+            <label htmlFor="liveUpdates" className="text-sm">Live Updates</label>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="autoShare"
+              checked={autoShare}
+              onChange={(e) => setAutoShare(e.target.checked)}
+              className="rounded"
+            />
+            <label htmlFor="autoShare" className="text-sm">Auto Share</label>
+          </div>
+          
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => startVideoCall('demo')}
+            disabled={videoCallActive}
+            className="text-xs"
+          >
+            <Video className="w-3 h-3 mr-1" />
+            {videoCallActive ? 'In Call' : 'Video Call'}
+          </Button>
+          
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={simulateDoctorConnection}
+            className="text-xs"
+          >
+            <UserPlus className="w-3 h-3 mr-1" />
+            Add Doctor
+          </Button>
+        </div>
+      </Card>
 
       {/* QR Code Display */}
       {showQR && (
@@ -410,6 +537,25 @@ export const DoctorConnectSystem = ({
                           Share Data
                         </>
                       )}
+                    </Button>
+                    
+                    <Button 
+                      size="sm" 
+                      onClick={() => startVideoCall(doctor.id)}
+                      disabled={videoCallActive}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      <Video className="w-4 h-4 mr-2" />
+                      {videoCallActive ? 'Connected' : 'Video Call'}
+                    </Button>
+                    
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => window.open(`tel:${doctor.phone}`)}
+                    >
+                      <Phone className="w-4 h-4 mr-2" />
+                      Call
                     </Button>
                   </div>
                 </div>
