@@ -140,25 +140,19 @@ export const ProductionLocationService: React.FC<ProductionLocationServiceProps>
     setIsTracking(true);
     setLocationMethod('gps');
 
-    // Multiple location attempts for reliability
-    const attempts = [
-      navigator.geolocation.getCurrentPosition,
-      navigator.geolocation.getCurrentPosition,
-      navigator.geolocation.getCurrentPosition
-    ];
-
-    attempts.forEach((attempt, index) => {
+    // Multiple location attempts for reliability (bound calls)
+    [0,1,2].forEach((i) => {
       setTimeout(() => {
-        attempt(
+        navigator.geolocation.getCurrentPosition(
           (position) => {
             handleLocationSuccess(position, true);
           },
           (error) => {
-            console.error(`Emergency location attempt ${index + 1} failed:`, error);
+            console.error(`Emergency location attempt ${i + 1} failed:`, error);
           },
           emergencyOptions
         );
-      }, index * 1000);
+      }, i * 1000);
     });
 
     // Continuous emergency tracking

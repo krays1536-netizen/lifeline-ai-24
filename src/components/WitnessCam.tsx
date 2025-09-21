@@ -56,6 +56,7 @@ export const WitnessCam = ({
   // Pre-buffer management (continuous 10-second rolling buffer)
   const preBufferIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const recordingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const isRecordingRef = useRef(false);
 
   // Initialize camera stream
   useEffect(() => {
@@ -105,23 +106,41 @@ export const WitnessCam = ({
   // Start continuous 10-second pre-buffer
   const startPreBuffering = useCallback(() => {
     if (!streamRef.current) return;
+
+    if (typeof window.MediaRecorder === 'undefined') {
+      toast({
+        title: 'Recording Not Supported',
+        description: 'Your browser does not support MediaRecorder API',
+        variant: 'destructive'
+      });
+      return;
+    }
     
     setIsPreBuffering(true);
     
-    const mediaRecorder = new MediaRecorder(streamRef.current, {
-      mimeType: 'video/webm;codecs=vp9'
-    });
+    // Choose the best supported mime type
+    let mimeType = 'video/webm;codecs=vp9';
+    if (!(window as any).MediaRecorder.isTypeSupported?.(mimeType)) {
+      mimeType = (window as any).MediaRecorder.isTypeSupported?.('video/webm;codecs=vp8')
+        ? 'video/webm;codecs=vp8'
+        : 'video/webm';
+    }
+    
+    const mediaRecorder = new MediaRecorder(streamRef.current, { mimeType });
     
     mediaRecorderRef.current = mediaRecorder;
     preBufferChunksRef.current = [];
     
     mediaRecorder.ondataavailable = (event) => {
       if (event.data.size > 0) {
+        // Always keep a rolling 10s pre-buffer
         preBufferChunksRef.current.push(event.data);
-        
-        // Keep only last 10 seconds of chunks (rolling buffer)
         if (preBufferChunksRef.current.length > 20) { // ~0.5s per chunk
           preBufferChunksRef.current.shift();
+        }
+        // If actively recording, also append to the full recording
+        if (isRecordingRef.current) {
+          recordingChunksRef.current.push(event.data);
         }
       }
     };
@@ -134,11 +153,19 @@ export const WitnessCam = ({
       progress = (progress + 10) % 100;
       setPreBufferProgress(progress);
     }, 500);
-  }, []);
+  }, [toast]);
 
   // Start full recording (includes pre-buffer + ongoing)
   const startRecording = useCallback(() => {
+    if (!streamRef.current) {
+      toast({ title: 'Camera not ready', description: 'Initializing camera...', variant: 'destructive' });
+      return;
+    }
+    if (!mediaRecorderRef.current || mediaRecorderRef.current.state !== 'recording') {
+      startPreBuffering();
+    }
     setIsRecording(true);
+    isRecordingRef.current = true;
     setRecordingDuration(0);
     onRecordingStart();
     
@@ -146,24 +173,21 @@ export const WitnessCam = ({
     recordingChunksRef.current = [...preBufferChunksRef.current];
     
     toast({
-      title: "🎥 WITNESS CAM RECORDING",
-      description: "10s pre-buffer + live recording active",
-      variant: "destructive"
+      title: '🎥 WITNESS CAM RECORDING',
+      description: '10s pre-buffer + live recording active',
+      variant: 'destructive'
     });
     
     // Track recording duration
     recordingIntervalRef.current = setInterval(() => {
       setRecordingDuration(prev => prev + 1);
     }, 1000);
-  }, [onRecordingStart]);
+  }, [onRecordingStart, startPreBuffering, toast]);
 
   // Stop recording and generate playback
   const stopRecording = useCallback(() => {
     setIsRecording(false);
-    
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-      mediaRecorderRef.current.stop();
-    }
+    isRecordingRef.current = false;
     
     if (recordingIntervalRef.current) {
       clearInterval(recordingIntervalRef.current);
@@ -185,10 +209,13 @@ export const WitnessCam = ({
     setShowPlayback(true);
     
     toast({
-      title: "Recording Saved",
+      title: 'Recording Saved',
       description: `${recordingDuration + 10}s total (10s pre-buffer + ${recordingDuration}s live)`,
-      variant: "default"
+      variant: 'default'
     });
+    
+    // Reset for next session but keep pre-buffer rolling
+    recordingChunksRef.current = [];
   }, [onRecordingStop, recordingDuration]);
 
   // Download recording
@@ -209,8 +236,15 @@ export const WitnessCam = ({
 
   // Cleanup function
   const cleanup = useCallback(() => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      mediaRecorderRef.current.stop();
+    }
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
     }
     
     if (preBufferIntervalRef.current) {
@@ -223,6 +257,7 @@ export const WitnessCam = ({
     
     setIsPreBuffering(false);
     setIsRecording(false);
+    isRecordingRef.current = false;
     setShowPlayback(false);
   }, []);
 

@@ -845,15 +845,6 @@ export const LifeLineGuardian = () => {
                 temperature: healthReadings.temperature
               }}
               onEmergencyTrigger={() => handleEmergencyTrigger("Watch Emergency")}
-              onVitalsUpdate={(vitals) => {
-                setHealthReadings(prev => ({
-                  ...prev,
-                  heartRate: vitals.heartRate,
-                  spO2: vitals.spO2,
-                  temperature: vitals.temperature,
-                  timestamp: vitals.timestamp
-                }));
-              }}
             />
           </TabsContent>
 
