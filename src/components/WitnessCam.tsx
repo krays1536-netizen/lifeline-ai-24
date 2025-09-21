@@ -244,10 +244,14 @@ export const WitnessCam = ({
 
   // Auto-start recording on external trigger
   useEffect(() => {
-    if (isActive && !isRecording && isPreBuffering) {
+    if (isActive && !isRecording && isPreBuffering && emergencyMode) {
       startRecording();
+      setEmergencyOverlay(true);
+      setAiAnalysisActive(true);
+      setAudioRecording(true);
+      setLocationTracking(true);
     }
-  }, [isActive, isRecording, isPreBuffering, startRecording]);
+  }, [isActive, isRecording, isPreBuffering, emergencyMode, startRecording]);
 
   return (
     <Card className="p-6 space-y-6">

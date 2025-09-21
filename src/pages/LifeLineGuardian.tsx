@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { GuardianStatus } from "@/components/GuardianStatus";
-import { ChatGPTStyleTriage } from "@/components/ChatGPTStyleTriage";
+import { EnhancedAITriage } from "@/components/EnhancedAITriage";
 import { HeroWelcome } from "@/components/HeroWelcome";
 import { AchievementSystem } from "@/components/AchievementSystem";
 import { HealthInsightsDashboard } from "@/components/HealthInsightsDashboard";
@@ -38,7 +38,7 @@ import { HospitalFinder } from "@/components/HospitalFinder";
 import { WorkingQRSystem } from "@/components/WorkingQRSystem";
 import { AppResetSettings } from "@/components/AppResetSettings";
 import { DiagnosticsPanel } from "@/components/DiagnosticsPanel";
-import { EnhancedWatchHub } from "@/components/EnhancedWatchHub";
+import { SuperEnhancedWatchHub } from "@/components/SuperEnhancedWatchHub";
 import { DoctorConnectSystem } from "@/components/DoctorConnectSystem";
 import { MedicalReportGenerator } from "@/components/MedicalReportGenerator";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -803,7 +803,7 @@ export const LifeLineGuardian = () => {
 
           {/* Enhanced AI Triage Tab - PRODUCTION */}
           <TabsContent value="triage">
-            <ChatGPTStyleTriage />
+            <EnhancedAITriage />
           </TabsContent>
 
           <TabsContent value="care">
@@ -838,7 +838,7 @@ export const LifeLineGuardian = () => {
 
           {/* Watch Hub Tab - ENHANCED VERSION */}
           <TabsContent value="watch" className="space-y-6">
-            <EnhancedWatchHub 
+            <SuperEnhancedWatchHub 
               vitals={{
                 heartRate: healthReadings.heartRate,
                 spO2: healthReadings.spO2,
