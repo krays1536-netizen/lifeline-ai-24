@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { LifeLineGuardian } from "./pages/LifeLineGuardian";
 import { IncidentViewer } from "./pages/IncidentViewer";
+import { MedConnect } from "./pages/MedConnect";
 
 const queryClient = new QueryClient();
 
