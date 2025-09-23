@@ -42,7 +42,8 @@ import { SuperEnhancedWatchHub } from "@/components/SuperEnhancedWatchHub";
 import { DoctorConnectSystem } from "@/components/DoctorConnectSystem";
 import { MedicalReportGenerator } from "@/components/MedicalReportGenerator";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Shield, Heart, Brain, Mic, Activity, Thermometer, MapPin, Users, Camera, Watch, Zap, Phone, Settings, FileText, Navigation, QrCode, Battery, BarChart3, Stethoscope, UserPlus } from "lucide-react";
+import { Shield, Heart, Brain, Mic, Activity, Thermometer, MapPin, Users, Camera, Watch, Zap, Phone, Settings, FileText, Navigation, QrCode, Battery, BarChart3, Stethoscope, UserPlus, Video, MessageCircle, CreditCard } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 interface HealthReading {
   heartRate: number;
@@ -52,6 +53,7 @@ interface HealthReading {
   timestamp: Date;
 }
 export const LifeLineGuardian = () => {
+  const navigate = useNavigate();
   const {
     toast
   } = useToast();
@@ -652,14 +654,19 @@ export const LifeLineGuardian = () => {
 
         {/* Navigation Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className={cn("grid w-full bg-card/50", isMobile ? "grid-cols-3" : "grid-cols-10")}>
+            <TabsList className={cn("grid w-full bg-card/50", isMobile ? "grid-cols-4" : "grid-cols-11")}>
             <TabsTrigger value="dashboard" className="font-poppins">
               <Shield className={cn("w-4 h-4", isMobile ? "" : "mr-2")} />
               {!isMobile && "Guardian"}
             </TabsTrigger>
             
+            <TabsTrigger value="medconnect" className="font-poppins bg-gradient-to-r from-blue-500 to-green-500 text-white">
+              <Heart className={cn("w-4 h-4", isMobile ? "" : "mr-2")} />
+              {!isMobile && "MedConnect"}
+            </TabsTrigger>
+            
             <TabsTrigger value="health" className="font-poppins">
-              
+              <Activity className={cn("w-4 h-4", isMobile ? "" : "mr-2")} />
               {!isMobile && "Health"}
             </TabsTrigger>
             {!isMobile && <>
@@ -692,7 +699,11 @@ export const LifeLineGuardian = () => {
           
           {/* Mobile Bottom Navigation */}
           {isMobile && <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-md border-t border-border/50 px-4 pb-safe">
-              <div className="grid grid-cols-4 gap-2 py-2">
+              <div className="grid grid-cols-5 gap-2 py-2">
+                <Button variant={activeTab === "medconnect" ? "default" : "ghost"} size="sm" onClick={() => navigate('/medconnect')} className="flex flex-col items-center p-2 h-auto bg-gradient-to-r from-blue-500 to-green-500 text-white">
+                  <Heart className="w-5 h-5 mb-1" />
+                  <span className="text-xs">MedConnect</span>
+                </Button>
                 <Button variant={activeTab === "voice" ? "default" : "ghost"} size="sm" onClick={() => setActiveTab("voice")} className="flex flex-col items-center p-2 h-auto">
                   <Mic className="w-5 h-5 mb-1" />
                   <span className="text-xs">Voice</span>
@@ -751,6 +762,162 @@ export const LifeLineGuardian = () => {
               </Card>
               
             </div>
+          </TabsContent>
+
+          {/* MedConnect Tab - COMPREHENSIVE MEDICAL PLATFORM */}
+          <TabsContent value="medconnect" className="space-y-6">
+            <div className="text-center mb-8">
+              <div className="flex justify-center mb-4">
+                <div className="p-4 rounded-full bg-gradient-to-r from-blue-500 to-green-500">
+                  <Heart className="h-12 w-12 text-white" />
+                </div>
+              </div>
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-4">
+                MedConnect Platform
+              </h2>
+              <p className="text-lg text-muted-foreground mb-6">
+                Your complete medical ecosystem - Connect with doctors, manage health records, and get instant medical support
+              </p>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {/* Video Consultations */}
+              <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100"
+                onClick={() => navigate('/medconnect')}>
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="p-3 rounded-lg bg-blue-500 text-white">
+                      <Video className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-blue-900">Video Consultations</h3>
+                      <p className="text-sm text-blue-700">Instant doctor access</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-blue-600 mb-4">Connect with certified doctors via HD video calls with screen sharing and file sharing</p>
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                    Start Video Call
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Medical ID Card */}
+              <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-red-200 bg-gradient-to-br from-red-50 to-red-100"
+                onClick={() => navigate('/medconnect')}>
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="p-3 rounded-lg bg-red-500 text-white">
+                      <CreditCard className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-red-900">Medical ID Card</h3>
+                      <p className="text-sm text-red-700">Digital emergency ID</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-red-600 mb-4">QR-enabled medical ID with emergency contacts, allergies, and critical health info</p>
+                  <Button className="w-full bg-red-600 hover:bg-red-700">
+                    View ID Card
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Secure Messaging */}
+              <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-green-200 bg-gradient-to-br from-green-50 to-green-100"
+                onClick={() => navigate('/medconnect')}>
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="p-3 rounded-lg bg-green-500 text-white">
+                      <MessageCircle className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-green-900">Secure Messaging</h3>
+                      <p className="text-sm text-green-700">HIPAA compliant chat</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-green-600 mb-4">End-to-end encrypted messaging with doctors and medical professionals</p>
+                  <Button className="w-full bg-green-600 hover:bg-green-700">
+                    Open Messages
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Health Vitals Monitoring */}
+              <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-purple-200 bg-gradient-to-br from-purple-50 to-purple-100"
+                onClick={() => navigate('/medconnect')}>
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="p-3 rounded-lg bg-purple-500 text-white">
+                      <Activity className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-purple-900">Live Vitals Monitor</h3>
+                      <p className="text-sm text-purple-700">Real-time health tracking</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-purple-600 mb-4">Monitor heart rate, blood oxygen, temperature with AI health insights</p>
+                  <Button className="w-full bg-purple-600 hover:bg-purple-700">
+                    Start Monitoring
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Emergency Broadcast */}
+              <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-orange-200 bg-gradient-to-br from-orange-50 to-orange-100"
+                onClick={() => navigate('/medconnect')}>
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="p-3 rounded-lg bg-orange-500 text-white">
+                      <Zap className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-orange-900">Emergency SOS</h3>
+                      <p className="text-sm text-orange-700">Life-saving alerts</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-orange-600 mb-4">Instant emergency broadcast to nearby medical professionals and family</p>
+                  <Button className="w-full bg-orange-600 hover:bg-orange-700">
+                    Emergency SOS
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Doctor Directory */}
+              <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-teal-200 bg-gradient-to-br from-teal-50 to-teal-100"
+                onClick={() => navigate('/medconnect')}>
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="p-3 rounded-lg bg-teal-500 text-white">
+                      <Stethoscope className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-teal-900">Doctor Directory</h3>
+                      <p className="text-sm text-teal-700">Find specialists</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-teal-600 mb-4">Browse certified doctors by specialization, rating, and availability</p>
+                  <Button className="w-full bg-teal-600 hover:bg-teal-700">
+                    Find Doctors
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Call-to-Action Banner */}
+            <Card className="bg-gradient-to-r from-blue-600 to-green-600 text-white">
+              <CardContent className="p-8 text-center">
+                <h3 className="text-2xl font-bold mb-4">Enter MedConnect Platform</h3>
+                <p className="text-lg mb-6 text-blue-100">
+                  Access your complete medical ecosystem with video consultations, secure messaging, and emergency features
+                </p>
+                <Button 
+                  size="lg" 
+                  onClick={() => navigate('/medconnect')}
+                  className="bg-white text-blue-600 hover:bg-blue-50 font-bold px-8 py-3"
+                >
+                  Launch MedConnect →
+                </Button>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Neural AI Tab - REMOVED AS REQUESTED */}
