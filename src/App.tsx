@@ -20,6 +20,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<LifeLineGuardian />} />
           <Route path="/legacy" element={<Index />} />
+          <Route path="/medconnect/*" element={<MedConnect />} />
           <Route path="/incident/:encodedData" element={<IncidentViewer />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

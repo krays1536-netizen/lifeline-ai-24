@@ -27,9 +27,10 @@ import { format } from "date-fns";
 interface VideoConsultationProps {
   userType: 'patient' | 'doctor';
   userProfile: any;
+  onStartCall?: (consultation: any) => void;
 }
 
-export const VideoConsultation = ({ userType, userProfile }: VideoConsultationProps) => {
+export const VideoConsultation = ({ userType, userProfile, onStartCall }: VideoConsultationProps) => {
   const { toast } = useToast();
   const [consultations, setConsultations] = useState<any[]>([]);
   const [selectedConsultation, setSelectedConsultation] = useState<any>(null);
@@ -209,22 +210,26 @@ export const VideoConsultation = ({ userType, userProfile }: VideoConsultationPr
   };
 
   const joinConsultation = (consultation: any) => {
-    setSelectedConsultation(consultation);
-    setIsInCall(true);
-    
-    toast({
-      title: "Joining consultation",
-      description: "Connecting to secure video call...",
-    });
+    if (onStartCall) {
+      onStartCall(consultation);
+    } else {
+      setSelectedConsultation(consultation);
+      setIsInCall(true);
+      
+      toast({
+        title: "Joining consultation",
+        description: "Connecting to secure video call...",
+      });
 
-    // Update consultation status
-    supabase
-      .from('consultations')
-      .update({ 
-        status: 'in_progress',
-        started_at: new Date().toISOString()
-      })
-      .eq('id', consultation.id);
+      // Update consultation status
+      supabase
+        .from('consultations')
+        .update({ 
+          status: 'in_progress',
+          started_at: new Date().toISOString()
+        })
+        .eq('id', consultation.id);
+    }
   };
 
   const endConsultation = () => {

@@ -5,6 +5,7 @@ import { FinalProductionPPG } from "@/components/FinalProductionPPG";
 import { ProductionDisasterAI } from "@/components/ProductionDisasterAI";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Shield, Brain, Heart, Stethoscope, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -43,9 +44,22 @@ const Index = () => {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-cyber-blue to-cyber-purple bg-clip-text text-transparent mb-2">
             LifeLine AI: AEGIS System
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mb-4">
             Advanced Emergency Intelligence & Guardian System - Production Demo
           </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg transform transition hover:scale-105">
+              Get Started
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline"
+              onClick={() => window.location.href = '/medconnect'}
+              className="border-2 border-red-500 text-red-600 hover:bg-red-50 font-semibold py-3 px-8 rounded-xl shadow-lg transform transition hover:scale-105"
+            >
+              🏥 MedConnect
+            </Button>
+          </div>
         </div>
       </div>
 
