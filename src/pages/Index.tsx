@@ -55,11 +55,43 @@ const Index = () => {
               size="lg" 
               variant="outline"
               onClick={() => window.location.href = '/medconnect'}
-              className="border-2 border-red-500 text-red-600 hover:bg-red-50 font-semibold py-3 px-8 rounded-xl shadow-lg transform transition hover:scale-105"
+              className="border-2 border-green-500 text-green-600 hover:bg-green-50 font-semibold py-3 px-8 rounded-xl shadow-lg transform transition hover:scale-105"
             >
-              🏥 MedConnect
+              🚀 MedConnect (2-min setup)
             </Button>
           </div>
+
+          {/* MedConnect Quick Access Banner */}
+          <Card className="max-w-4xl mx-auto mt-6 bg-gradient-to-r from-blue-50 to-green-50 border-blue-200">
+            <div className="p-6 text-center">
+              <div className="flex justify-center mb-4">
+                <div className="bg-gradient-to-r from-blue-500 to-green-500 p-3 rounded-full">
+                  <Heart className="h-8 w-8 text-white" />
+                </div>
+              </div>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-3">
+                🏥 Professional Healthcare in 2 Minutes
+              </h2>
+              <p className="text-gray-700 mb-4">
+                Get instant access to video consultations with doctors, medical ID cards, and emergency features. 
+                No email required - just your phone number and accept terms!
+              </p>
+              <div className="flex flex-wrap justify-center gap-2 mb-4">
+                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">✅ Video Consultations</span>
+                <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">✅ Medical ID Cards</span>
+                <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm">✅ Emergency SOS</span>
+                <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">✅ HIPAA Compliant</span>
+              </div>
+              <Button 
+                onClick={() => window.location.href = '/medconnect'}
+                size="lg"
+                className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white font-bold px-8 py-3"
+              >
+                🚀 Start MedConnect Now →
+              </Button>
+              <p className="text-xs text-gray-500 mt-2">No email • Just phone & terms • Instant access</p>
+            </div>
+          </Card>
         </div>
       </div>
 

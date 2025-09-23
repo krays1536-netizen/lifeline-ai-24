@@ -905,17 +905,31 @@ export const LifeLineGuardian = () => {
             {/* Call-to-Action Banner */}
             <Card className="bg-gradient-to-r from-blue-600 to-green-600 text-white">
               <CardContent className="p-8 text-center">
-                <h3 className="text-2xl font-bold mb-4">Enter MedConnect Platform</h3>
+                <h3 className="text-2xl font-bold mb-4">🚀 Quick Access to Professional Healthcare</h3>
                 <p className="text-lg mb-6 text-blue-100">
-                  Access your complete medical ecosystem with video consultations, secure messaging, and emergency features
+                  Get instant access to video consultations, medical ID, and emergency features in under 2 minutes!
                 </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-4">
+                  <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full">
+                    <span className="text-sm">✅ No email required</span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full">
+                    <span className="text-sm">✅ Just phone & terms</span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full">
+                    <span className="text-sm">✅ Instant access</span>
+                  </div>
+                </div>
                 <Button 
                   size="lg" 
                   onClick={() => navigate('/medconnect')}
-                  className="bg-white text-blue-600 hover:bg-blue-50 font-bold px-8 py-3"
+                  className="bg-white text-blue-600 hover:bg-blue-50 font-bold px-8 py-3 text-lg"
                 >
-                  Launch MedConnect →
+                  🏥 Start MedConnect Now (2 min setup) →
                 </Button>
+                <p className="text-sm text-blue-200 mt-3">
+                  Join thousands of users getting professional healthcare instantly
+                </p>
               </CardContent>
             </Card>
           </TabsContent>

@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 
 // Import components
-import { MedConnectAuth } from "@/components/MedConnectAuth";
+import { QuickMedConnectOnboarding } from "@/components/QuickMedConnectOnboarding";
 import { SecureMessaging } from "@/components/SecureMessaging";
 import { VideoConsultation } from "@/components/VideoConsultation";
 import { MedicalFileSharing } from "@/components/MedicalFileSharing";
@@ -145,7 +145,7 @@ export const MedConnect = () => {
   }
 
   if (!user) {
-    return <MedConnectAuth onAuthSuccess={handleAuthSuccess} />;
+    return <QuickMedConnectOnboarding onComplete={handleAuthSuccess} />;
   }
 
   // If there's an active video call, show the call interface
